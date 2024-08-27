@@ -59,7 +59,7 @@ class TOTPPage extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => QRPage(
-          onQRCodeScanned: (qrText) {
+          onQRCodeScanned: (qrText, stopProcessing) {
             try {
               final uri = Uri.parse(qrText);
               if (uri.scheme == 'otpauth' && uri.host == 'totp') {
@@ -69,11 +69,23 @@ class TOTPPage extends StatelessWidget {
                   Provider.of<TOTPProvider>(context, listen: false)
                       .addAccount(accountName, secret);
                 }
+                Navigator.pop(context);
+                stopProcessing();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Key Added')),
+                );
+              } else {
+                stopProcessing();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('QR Code Not Supported')),
+                );
               }
             } catch (e) {
-              print('Error processing QR code: $e');
+              stopProcessing();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('QR Scan Failed')),
+              );
             }
-            Navigator.pop(context);
           },
         ),
       ),

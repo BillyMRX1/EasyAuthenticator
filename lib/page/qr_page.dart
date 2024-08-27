@@ -1,11 +1,9 @@
 import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QRPage extends StatefulWidget {
-  final Function(String) onQRCodeScanned;
+  final Function(String, Function) onQRCodeScanned;
 
   const QRPage({super.key, required this.onQRCodeScanned});
 
@@ -17,6 +15,7 @@ class _QRPageState extends State<QRPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   Barcode? result;
   QRViewController? controller;
+  bool isProcessing = false;
 
   @override
   void reassemble() {
@@ -36,7 +35,16 @@ class _QRPageState extends State<QRPage> {
         key: qrKey,
         onQRViewCreated: (controller) {
           controller.scannedDataStream.listen((scanData) {
-            widget.onQRCodeScanned(scanData.code.toString());
+            if (!isProcessing) {
+              isProcessing = true;
+              controller.pauseCamera();
+              widget.onQRCodeScanned(scanData.code.toString(), () {
+                setState(() {
+                  isProcessing = false;
+                  controller.resumeCamera();
+                });
+              });
+            }
           });
         },
         overlay: QrScannerOverlayShape(
