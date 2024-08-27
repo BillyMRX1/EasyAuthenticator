@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../provider/totp_provider.dart';
 import '../widget/totp_account_card.dart';
 import '../widget/manual_input_dialog.dart';
-import '../widget/qr_scanner.dart';
+import 'qr_page.dart';
 import '../widget/totp_fab.dart';
 
 class TOTPPage extends StatelessWidget {
@@ -58,16 +58,20 @@ class TOTPPage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => QRScanner(
+        builder: (context) => QRPage(
           onQRCodeScanned: (qrText) {
-            final uri = Uri.parse(qrText);
-            if (uri.scheme == 'otpauth' && uri.host == 'totp') {
-              final accountName = uri.pathSegments.last;
-              final secret = uri.queryParameters['secret'];
-              if (secret != null) {
-                Provider.of<TOTPProvider>(context, listen: false)
-                    .addAccount(accountName, secret);
+            try {
+              final uri = Uri.parse(qrText);
+              if (uri.scheme == 'otpauth' && uri.host == 'totp') {
+                final accountName = uri.pathSegments.last;
+                final secret = uri.queryParameters['secret'];
+                if (secret != null) {
+                  Provider.of<TOTPProvider>(context, listen: false)
+                      .addAccount(accountName, secret);
+                }
               }
+            } catch (e) {
+              print('Error processing QR code: $e');
             }
             Navigator.pop(context);
           },
