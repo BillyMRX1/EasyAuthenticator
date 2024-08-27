@@ -17,12 +17,12 @@ To run this app locally, follow these steps:
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/BillyMRX1/easy_authenticator.git
+   git clone https://github.com/BillyMRX1/EasyAuthenticator.git
 
 2. **Navigate to the Project Directory**
 
    ```bash
-   cd easy_authenticator
+   cd EasyAuthenticator
 
 3. **Install Dependencies**
 
