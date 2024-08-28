@@ -12,21 +12,43 @@ class ManualInputDialog extends StatefulWidget {
 class _ManualInputDialogState extends State<ManualInputDialog> {
   final TextEditingController _accountController = TextEditingController();
   final TextEditingController _secretController = TextEditingController();
+  String? _errorMessage;
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Theme.of(context).colorScheme.onSecondary,
       title: const Text('Add Account Manually'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _accountController,
-            decoration: const InputDecoration(labelText: 'Account Name'),
+            decoration: InputDecoration(
+              labelText: 'Account Name',
+              focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: Theme.of(context).colorScheme.primary)),
+              enabledBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: Theme.of(context).colorScheme.primary)),
+            ),
+          ),
+          const SizedBox(
+            height: 16,
           ),
           TextField(
             controller: _secretController,
-            decoration: const InputDecoration(labelText: 'Secret Key'),
+            decoration: InputDecoration(
+              labelText: 'Secret Key',
+              errorText: _errorMessage,
+              focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: Theme.of(context).colorScheme.primary)),
+              enabledBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: Theme.of(context).colorScheme.primary)),
+            ),
           ),
         ],
       ),
@@ -43,8 +65,18 @@ class _ManualInputDialogState extends State<ManualInputDialog> {
             final secret = _secretController.text;
 
             if (accountName.isNotEmpty && secret.isNotEmpty) {
-              widget.onAddAccount(accountName, secret);
-              Navigator.pop(context);
+              if (secret.length < 16) {
+                setState(() {
+                  _errorMessage = 'Secret Key is too short';
+                });
+              } else if (!RegExp(r'^[a-zA-Z0-9]+$').hasMatch(secret)) {
+                setState(() {
+                  _errorMessage = 'Secret Key has illegal character';
+                });
+              } else {
+                widget.onAddAccount(accountName, secret);
+                Navigator.pop(context);
+              }
             }
           },
           child: const Text('Add'),

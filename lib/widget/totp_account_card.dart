@@ -35,6 +35,7 @@ class TOTPAccountCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Card(
+        color: Theme.of(context).colorScheme.secondaryContainer,
         elevation: 4,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -50,18 +51,20 @@ class TOTPAccountCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       account.accountName,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.white : Colors.black),
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.blue),
+                    icon: Icon(Icons.edit,
+                        color: isDark ? Colors.white : Colors.black),
                     onPressed: onEdit,
                   ),
                   IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
+                    icon: Icon(Icons.delete,
+                        color: isDark ? Colors.white : Colors.black),
                     onPressed: onDelete,
                   ),
                 ],
@@ -73,13 +76,13 @@ class TOTPAccountCard extends StatelessWidget {
                     children: [
                       Text(
                         account.totp ?? 'Generating...',
-                        style: const TextStyle(
-                          fontSize: 16,
-                        ),
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: isDark ? Colors.white : Colors.black),
                       ),
                       IconButton(
                         icon: Icon(Icons.copy,
-                            color: isDark ? Colors.grey.shade300 : Colors.black),
+                            color: isDark ? Colors.white : Colors.black),
                         onPressed: () => _copyToClipboard(context),
                       ),
                     ],
@@ -91,12 +94,14 @@ class TOTPAccountCard extends StatelessWidget {
                       alignment: Alignment.center,
                       children: [
                         CircularProgressIndicator(
-                          value: progress,
-                          strokeWidth: 3,
-                        ),
+                            value: progress,
+                            strokeWidth: 3,
+                            color: isDark ? Colors.white : Colors.black),
                         Text(
                           seconds.toString(),
-                          style: const TextStyle(fontSize: 12),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: isDark ? Colors.white : Colors.black),
                         ),
                       ],
                     ),
