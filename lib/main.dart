@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_authenticator/page/splash_screen.dart';
 import 'package:easy_authenticator/page/totp_page.dart';
 import 'package:easy_authenticator/provider/totp_provider.dart';
@@ -27,7 +29,7 @@ class MyApp extends StatelessWidget {
             colorScheme: colorScheme,
             useMaterial3: true,
           ),
-          home: const SplashScreen(),
+          home: Platform.isAndroid ? const SplashScreen() : const TOTPPage(),
         );
       },
     );
