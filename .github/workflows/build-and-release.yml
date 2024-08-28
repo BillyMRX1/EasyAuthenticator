@@ -11,64 +11,62 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4.1.7
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
 
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2.14.0
-      with:
-        flutter-version: 'stable'
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2.14.0
 
-    - name: Install dependencies
-      run: flutter pub get
+      - name: Install dependencies
+        run: flutter pub get
 
-    - name: Build APK
-      run: flutter build apk --release
+      - name: Build APK
+        run: flutter build apk --release
 
-    - name: Build IPA
-      run: flutter build ios --release --no-codesign
+      - name: Build IPA
+        run: flutter build ios --release --no-codesign
 
-    - name: Upload APK
-      uses: actions/upload-artifact@v4.3.6
-      with:
-        name: app-release.apk
-        path: build/app/outputs/flutter-apk/app-release.apk
+      - name: Upload APK
+        uses: actions/upload-artifact@v4.3.6
+        with:
+          name: app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
 
-    - name: Upload IPA
-      uses: actions/upload-artifact@v4.3.6
-      with:
-        name: app-release.ipa
-        path: build/ios/ipa/easy_authenticator.ipa
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4.3.6
+        with:
+          name: app-release.ipa
+          path: build/ios/ipa/easy_authenticator.ipa
 
   create-release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
     needs: build
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4.1.7
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
 
-    - name: Extract version number
-      id: extract_version
-      run: |
-        version=$(grep '^version: ' pubspec.yaml | cut -d " " -f 2 | cut -d "+" -f 1)
-        echo "::set-output name=version::$version"
+      - name: Extract version number
+        id: extract_version
+        run: |
+          version=$(grep '^version: ' pubspec.yaml | cut -d " " -f 2 | cut -d "+" -f 1)
+          echo "::set-output name=version::$version"
 
-    - name: Extract release title from PR
-      id: extract_pr_title
-      run: |
-        title=$(git log -1 --pretty=%s)
-        echo "::set-output name=title::$title"
+      - name: Extract release title from PR
+        id: extract_pr_title
+        run: |
+          title=$(git log -1 --pretty=%s)
+          echo "::set-output name=title::$title"
 
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v2.0.8
-      with:
-        tag_name: ${{ env.version }}
-        name: ${{ env.title }}
-        body: |
-          Release of version ${{ env.version }}.
-        files: |
-          build/app/outputs/flutter-apk/app-release.apk
-          build/ios/ipa/easy_authenticator.ipa
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2.0.8
+        with:
+          tag_name: ${{ env.version }}
+          name: ${{ env.title }}
+          body: |
+            Release of version ${{ env.version }}.
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/ios/ipa/easy_authenticator.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
