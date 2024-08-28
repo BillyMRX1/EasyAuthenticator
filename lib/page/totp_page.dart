@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../provider/totp_provider.dart';
 import '../widget/totp_account_card.dart';
 import '../widget/manual_input_dialog.dart';
-import '../widget/qr_scanner.dart';
+import 'qr_page.dart';
 import '../widget/totp_fab.dart';
 
 class TOTPPage extends StatelessWidget {
@@ -58,18 +58,34 @@ class TOTPPage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => QRScanner(
-          onQRCodeScanned: (qrText) {
-            final uri = Uri.parse(qrText);
-            if (uri.scheme == 'otpauth' && uri.host == 'totp') {
-              final accountName = uri.pathSegments.last;
-              final secret = uri.queryParameters['secret'];
-              if (secret != null) {
-                Provider.of<TOTPProvider>(context, listen: false)
-                    .addAccount(accountName, secret);
+        builder: (context) => QRPage(
+          onQRCodeScanned: (qrText, stopProcessing) {
+            try {
+              final uri = Uri.parse(qrText);
+              if (uri.scheme == 'otpauth' && uri.host == 'totp') {
+                final accountName = uri.pathSegments.last;
+                final secret = uri.queryParameters['secret'];
+                if (secret != null) {
+                  Provider.of<TOTPProvider>(context, listen: false)
+                      .addAccount(accountName, secret);
+                }
+                Navigator.pop(context);
+                stopProcessing();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Key Added')),
+                );
+              } else {
+                stopProcessing();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('QR Code Not Supported')),
+                );
               }
+            } catch (e) {
+              stopProcessing();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('QR Scan Failed')),
+              );
             }
-            Navigator.pop(context);
           },
         ),
       ),
