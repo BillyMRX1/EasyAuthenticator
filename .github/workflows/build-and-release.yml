@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v4.3.6
         with:
           name: app-release.ipa
-          path: build/ios/ipa/easy_authenticator.ipa
+          path: build/ios/iphoneos/Runner.app
 
   create-release:
     name: Create GitHub Release
@@ -70,12 +70,11 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2.0.8
         with:
-          tag_name: ${{ env.version }}
+          tag_name: "v${{ env.VERSION }}"
           name: ${{ env.title }}
-          body: |
-            Release of version ${{ env.version }}.
+          body: "Release of version ${{ env.VERSION }}"
           files: |
             build/app/outputs/flutter-apk/app-release.apk
-            build/ios/ipa/easy_authenticator.ipa
+            build/ios/iphoneos/Runner.app
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
